@@ -15,7 +15,8 @@ export default defineNuxtConfig({
     '@unocss/nuxt',
     '@pinia/nuxt',
     'unplugin-icons/nuxt',
-    '@vueuse/nuxt'
+    '@vueuse/nuxt',
+    './modules/nuxt-oauth'
   ],
   vite: {
     plugins: [
