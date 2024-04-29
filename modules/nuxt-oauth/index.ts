@@ -33,10 +33,5 @@ export default defineNuxtModule({
       name: 'GoogleOAuthProvider',
       filePath: resolver.resolve('./components/GoogleOAuthProvider.vue')
     })
-
-    addImports({
-      name: 'useLoadScript', // name of the composable to be used
-      from: resolver.resolve('./composables/useLoadScript') // path of composable
-    })
   }
 })

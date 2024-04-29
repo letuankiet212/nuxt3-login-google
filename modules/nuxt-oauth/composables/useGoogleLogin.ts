@@ -1,5 +1,5 @@
-import { inject, nextTick, ref } from "vue";
-import { CodeClientConfig, CodeResponse, NonOAuthError } from "../types";
+import { nextTick, ref } from "vue";
+import { CodeClientConfig, CodeResponse, NonOAuthError } from "../types/index";
 
 interface AuthCodeFlowOptions
   extends Omit<
@@ -39,10 +39,7 @@ export default function useGoogleLogin({
   state,
   ...props
 }: UseGoogleLoginOptions) {
-  const $google = inject<{
-    clientId?: string;
-    isLoadedSuccessfully: boolean;
-  }>("$google");
+  const { $google } = useNuxtApp();
 
   const clientRef = ref<any>();
   const onSuccessRef = ref(onSuccess);
@@ -50,20 +47,20 @@ export default function useGoogleLogin({
   const onNonOAuthErrorRef = ref(onNonOAuthError);
 
   const addClientId = () => {
-    if (!$google.isLoadedSuccessfully) {
+    if (!$google.value.isLoadedSuccessfully) {
       throw new Error(
         "Google OAuth components must be used within GoogleOAuthProvider"
       );
     }
 
-    if (!$google.clientId) {
+    if (!$google.value.clientId) {
       throw new Error("Google Client ID is not defined");
     }
 
     const clientMethod = "initCodeClient";
 
     const client = window?.google?.accounts.oauth2[clientMethod]({
-      client_id: $google.clientId,
+      client_id: $google.value.clientId,
       scope: overrideScope ? scope : `openid profile email ${scope}`,
       callback: (response) => {
         if (response.error) {

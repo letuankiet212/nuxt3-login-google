@@ -1,27 +1,64 @@
 <script setup lang="ts">
-import useLoadScript, { type UseLoadScriptOptions } from './../composables/useLoadScript';
+interface UseLoadScriptOptions {
+    /**
+     * Nonce applied to GSI script tag. Propagates to GSI's inline style tag
+     */
+    nonce?: string
+    /**
+     * Callback fires on load [gsi](https://accounts.google.com/gsi/client) script success
+     */
+    onScriptLoadSuccess?: () => void
+    /**
+     * Callback fires on load [gsi](https://accounts.google.com/gsi/client) script failure
+     */
+    onScriptLoadError?: () => void
+}
 
 interface GoogleOAuthProviderProps extends /* @vue-ignore */ UseLoadScriptOptions {
     clientId: string;
 }
 
 const props = defineProps<GoogleOAuthProviderProps>();
-
-
-const isLoadedSuccessfully = useLoadScript(
-    {
-        nonce: props.nonce,
-        onScriptLoadSuccess: props.onScriptLoadSuccess,
-        onScriptLoadError: props.onScriptLoadError,
-    }
-);
-
-useNuxtApp().$google = {
+const isLoadedSuccessfully = ref(false);
+const google = useState('google', () => ({
     clientId: props.clientId,
     isLoadedSuccessfully
-}
+}));
+
+onMounted(() => {
+    if (document.getElementById('google-auth-script')) {
+        isLoadedSuccessfully.value = true;
+    };
+
+    const scriptTag = document.createElement('script');
+    scriptTag.src = 'https://accounts.google.com/gsi/client';
+    scriptTag.async = true;
+    scriptTag.defer = true;
+    scriptTag.id = 'google-auth-script';
+    scriptTag.onload = () => {
+        isLoadedSuccessfully.value = true;
+        props.onScriptLoadSuccess?.();
+    };
+    scriptTag.onerror = () => {
+        isLoadedSuccessfully.value = false;
+        props.onScriptLoadError?.();
+    };
+
+    document.body.appendChild(scriptTag);
+
+    google.value = {
+        clientId: props.clientId,
+        isLoadedSuccessfully
+    };
+});
+
 </script>
 
 <template>
-    <slot />
+    <ClientOnly>
+        <slot />
+        <template #fallback>
+            <slot name='fallback' />
+        </template>
+    </ClientOnly>
 </template>
