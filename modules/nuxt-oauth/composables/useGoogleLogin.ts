@@ -1,5 +1,5 @@
 import { nextTick, ref } from "vue";
-import { CodeClientConfig, CodeResponse, NonOAuthError } from "../types/index";
+import type { CodeClientConfig, CodeResponse, NonOAuthError } from "../types/index";
 
 interface AuthCodeFlowOptions
   extends Omit<
@@ -23,14 +23,11 @@ interface AuthCodeFlowOptions
   overrideScope?: boolean;
 }
 
-export type UseGoogleLoginOptionsAuthCodeFlow = {
-  flow?: "auth-code";
-} & AuthCodeFlowOptions;
+export type UseGoogleLoginOptionsAuthCodeFlow = AuthCodeFlowOptions;
 
 export type UseGoogleLoginOptions = UseGoogleLoginOptionsAuthCodeFlow;
 
 export default function useGoogleLogin({
-  flow = "auth-code",
   scope = "",
   onSuccess,
   onError,

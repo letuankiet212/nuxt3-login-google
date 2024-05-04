@@ -25,13 +25,18 @@ export default defineNuxtModule({
   setup(moduleOptions, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    // Add Plugin
+    // Register Plugin
     addPlugin(resolve(__dirname, './plugin.ts'))
 
-    // Add Component
+    // Register Components
     addComponent({
       name: 'GoogleOAuthProvider',
       filePath: resolver.resolve('./components/GoogleOAuthProvider.vue')
+    })
+
+    // Register Composables
+    nuxt.hook('imports:dirs', (dirs) => {
+      dirs.push(resolve(__dirname, './composables'))
     })
   }
 })
